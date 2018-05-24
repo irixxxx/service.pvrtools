@@ -13,6 +13,21 @@ import xbmcvfs
 import sys
 from common_variables import *
 
+def m3u_merge_one(m3u):
+	inp = os.path.join(datapath,'download_folder',m3u)
+	out = os.path.join(selfAddon.getSetting('output_folder'),selfAddon.getSetting('file_name_lists').replace('.m3u8','').replace('.m3u','')+'.m3u')
+	if xbmcvfs.exists(inp):
+		f = open(inp, "r")
+		text = f.read()
+		f.close()
+		if not xbmcvfs.exists(out):
+			with open(out, "a") as myfile:
+				myfile.write(text)
+		else:
+			with open(out, "a") as myfile:
+				myfile.write(text.replace('#EXTM3U#','').replace('#EXTM3U',''))
+		os.remove(inp)
+
 def m3u_merge(notification=False):
 	print "Starting m3u8 list processing..."
 	if selfAddon.getSetting('l1') == 'true':
@@ -57,27 +72,39 @@ def m3u_merge(notification=False):
 	try: t5.join()
 	except:pass
 	xbmc.sleep(1000)
-	print "Starting m3u8 list merging..."
-	dirs, m3u_list = xbmcvfs.listdir(os.path.join(datapath,'download_folder'))
 	out = os.path.join(selfAddon.getSetting('output_folder'),selfAddon.getSetting('file_name_lists').replace('.m3u8','').replace('.m3u','')+'.m3u')
 	if xbmcvfs.exists(out): os.remove(out)
-	i=1
-	total = len(m3u_list)	
-	for m3u in m3u_list:
-		if i==1:
-			f = open(os.path.join(datapath,'download_folder',m3u), "r")
-			text = f.read()
-			f.close()
-			with open(out, "a") as myfile:
-				myfile.write(text)
+	print "Starting m3u8 list merging..."
+	if selfAddon.getSetting('l1') == 'true':
+		if selfAddon.getSetting('l1-type') == '1':
+			n = selfAddon.getSetting('l1-url')
 		else:
-			f = open(os.path.join(datapath,'download_folder',m3u), "r")
-			text = f.read()
-			f.close()
-			with open(out, "a") as myfile:
-				myfile.write(text.replace('#EXTM3U#','').replace('#EXTM3U',''))
-		os.remove(os.path.join(datapath,'download_folder',m3u))
-		i+=1
+			n = selfAddon.getSetting('l1-loc')	
+		m3u_merge_one(n.split('/')[-1])
+	if selfAddon.getSetting('l2') == 'true':
+		if selfAddon.getSetting('l2-type') == '1':
+			n = selfAddon.getSetting('l2-url')
+		else:
+			n = selfAddon.getSetting('l2-loc')	
+		m3u_merge_one(n.split('/')[-1])
+	if selfAddon.getSetting('l3') == 'true':
+		if selfAddon.getSetting('l3-type') == '1':
+			n = selfAddon.getSetting('l3-url')
+		else:
+			n = selfAddon.getSetting('l3-loc')	
+		m3u_merge_one(n.split('/')[-1])
+	if selfAddon.getSetting('l4') == 'true':
+		if selfAddon.getSetting('l4-type') == '1':
+			n = selfAddon.getSetting('l4-url')
+		else:
+			n = selfAddon.getSetting('l4-loc')	
+		m3u_merge_one(n.split('/')[-1])
+	if selfAddon.getSetting('l5') == 'true':
+		if selfAddon.getSetting('l5-type') == '1':
+			n = selfAddon.getSetting('l5-url')
+		else:
+			n = selfAddon.getSetting('l5-loc')	
+		m3u_merge_one(n.split('/')[-1])
 	print "M3u8 lists have been merged..."
 	if notification:
 		xbmc.executebuiltin("Notification(%s,%s,%i,%s)" % ('PVR Tools', 'Lists have been merged!', 1,os.path.join(addonfolder,"icon.png")))
