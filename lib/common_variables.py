@@ -16,15 +16,16 @@ def copy_file(path):
 	shutil.copy(path, os.path.join(datapath,'download_folder'))
 	print "File has been copied..."
 
-def download_and_extract(name):
+def download_and_extract(prefix,name):
 	print "starting download... " + str(name)
 	start_time = time.time()
 	r = requests.get(name, stream=True)
 	if r.status_code == 200:
-		with open(os.path.join(datapath,'download_folder',name.split('/')[-1]), 'wb') as f:
+		with open(os.path.join(datapath,'download_folder',prefix+name.split('/')[-1]), 'wb') as f:
 			r.raw.decode_content = True
 			shutil.copyfileobj(r.raw, f) 
 		print "download finished..." + name
 		print "elapsed time:" + str(time.time() - start_time)
 	else:
+		xbmc.executebuiltin("Notification(%s,%s,%i,%s)" % ('PVR Tools', "Download failed!", 1,os.path.join(addonfolder,"icon.png")))
 		print "download failed (error status != 200)..." + name
